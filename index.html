@@ -210,7 +210,20 @@
   .schedule-item:last-child { border-bottom: none; }
   .court-name { color: #ffc23c; font-size: 18px; font-weight: 800; text-transform: uppercase; }
   .court-time { color: white; margin-top: 4px; font-size: 20px; font-weight: 700; }
-
+  .mini-court{
+    width:25%;
+    height: stretch;
+    border-radius:6px;
+    background:linear-gradient(180deg,#0d3d2b,#0a2d20);
+    border:2px solid #2f6b4c;position:relative;flex-shrink:0;
+    margin-left:auto;
+  }
+  .mini-court::before{
+    content:'';position:absolute;inset:6px;border:1px solid #6fae8c;
+  }
+  .mini-court::after{
+    content:'';position:absolute;top:50%;left:0;right:0;height:2px;background:#fff;
+  }
   .venue-bar {
     margin-top: 22px;
     border: 2px solid var(--gold);
@@ -401,6 +414,7 @@ function addScheduleRow(){
   const row = document.createElement("div");
   row.className = "schedule-row";
   row.innerHTML = `
+    
     <input type="text" class="court-input" placeholder="Court Number">
     <input type="time" class="start-input" step="3600" value="18:00">
     <input type="time" class="end-input" step="3600" value="19:00">
@@ -437,11 +451,15 @@ function renderSchedule(){
       : "No time selected";
 
     html += `
-      <div class="schedule-item">
-        <div class="court-name">🏸 ${escapeHtml(court.value)}</div>
-        <div class="court-time">${timeFormatted}</div>
-      </div>
-    `;
+  <div class="schedule-item" style="display:flex;justify-content:space-between;align-items:center;gap:15px;">
+    <div>
+      <div class="court-name">🏸 ${escapeHtml(court.value)}</div>
+      <div class="court-time">${timeFormatted}</div>
+    </div>
+
+    <div class="mini-court"></div>
+  </div>
+`;
   });
   document.getElementById("scheduleOut").innerHTML = html;
 }
