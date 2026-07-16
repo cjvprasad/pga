@@ -5,201 +5,260 @@
 <title>Badminton Match Poster Maker</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-  :root{
-    --navy-deep:#050b18;
-    --navy:#0c1a33;
-    --navy-panel:#0f2142;
-    --gold:#f2a71b;
-    --gold-bright:#ffc23c;
-    --ink:#eaf0fb;
-    --line:#2a3f66;
+  :root {
+    --navy-deep: #050b18;
+    --navy: #0c1a33;
+    --navy-panel: #0f2142;
+    --gold: #f2a71b;
+    --gold-bright: #ffc23c;
+    --ink: #eaf0fb;
+    --line: #2a3f66;
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    font-family:'Segoe UI',Arial,sans-serif;
-    background:#050914;
-    color:var(--ink);
-    display:flex;
-    min-height:100vh;
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #050914;
+    color: var(--ink);
+    display: flex;
+    min-height: 100vh;
   }
+  
   /* ---------- LEFT PANEL ---------- */
-  #panel{
-    width:340px;
-    flex-shrink:0;
-    background:var(--navy-deep);
-    padding:24px 20px 40px;
-    overflow-y:auto;
-    max-height:100vh;
-    border-right:1px solid var(--line);
+  #panel {
+    width: 340px;
+    flex-shrink: 0;
+    background: var(--navy-deep);
+    padding: 24px 20px 40px;
+    overflow-y: auto;
+    max-height: 100vh;
+    border-right: 1px solid var(--line);
   }
-  #panel h1{
-    font-size:20px;
-    color:var(--gold-bright);
-    letter-spacing:.5px;
-    margin:0 0 4px;
+  #panel h1 {
+    font-size: 20px;
+    color: var(--gold-bright);
+    letter-spacing: .5px;
+    margin: 0 0 4px;
   }
-  #panel p.sub{
-    font-size:12.5px;
-    color:#9fb0cc;
-    margin:0 0 22px;
-    line-height:1.4;
+  #panel p.sub {
+    font-size: 12.5px;
+    color: #9fb0cc;
+    margin: 0 0 22px;
+    line-height: 1.4;
   }
-  label{
-    display:block;
-    font-size:12px;
-    font-weight:700;
-    color:var(--gold);
-    letter-spacing:.4px;
-    margin:18px 0 6px;
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: .4px;
+    margin: 18px 0 6px;
+    text-transform: uppercase;
   }
-  input[type=text], textarea{
-    width:100%;
-    background:#fff;
-    color:#111;
-    border:none;
-    border-radius:6px;
-    padding:9px 10px;
-    font-size:13.5px;
-    font-family:inherit;
-    resize:vertical;
+  input[type=text], input[type=date], input[type=time], textarea {
+    width: 100%;
+    background: #fff;
+    color: #111;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 10px;
+    font-size: 13.5px;
+    font-family: inherit;
+    resize: vertical;
   }
-  textarea{min-height:96px;line-height:1.5;}
-  button{
-    width:100%;
-    border:none;
-    border-radius:6px;
-    padding:12px;
-    font-size:13.5px;
-    font-weight:700;
-    letter-spacing:.4px;
-    cursor:pointer;
-    margin-top:10px;
+  textarea { min-height: 96px; line-height: 1.5; }
+  button {
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    cursor: pointer;
+    margin-top: 10px;
   }
-  #uploadBtn{background:#1f4fb3;color:#fff;}
-  #genBtn{background:var(--gold);color:#1a1300;margin-top:22px;}
-  #dlBtn{background:#1f9d55;color:#fff;}
-  #resetBtn{background:#1f4fb3;color:#fff;}
-  #status{font-size:11.5px;color:#7fdc9a;min-height:16px;margin-top:8px;text-align:center;}
+  #dlBtn { background: var(--success, #1f9d55); color: #fff; margin-top: 22px; }
+  #resetBtn { background: #1f4fb3; color: #fff; }
+  #status { font-size: 11.5px; color: #7fdc9a; min-height: 16px; margin-top: 8px; text-align: center; }
+
+  /* ---------- SCHEDULE GRID ROWS ---------- */
+  .schedule-row {
+    display: grid;
+    grid-template-columns: 1fr 0.7fr 0.7fr 35px;
+    gap: 6px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  .schedule-row input {
+    width: 100%;
+    padding: 8px 6px;
+    border-radius: 6px;
+    border: none;
+    font-size: 12px;
+    height: 34px;
+  }
+  .schedule-row button {
+    width: 100%;
+    margin-top: 0;
+    padding: 0;
+    background: #f2a71b;
+    color: #111;
+    font-weight: bold;
+    border-radius: 6px;
+    height: 34px;
+  }
+  .schedule-row button.remove-btn {
+    background: #d93838;
+    color: #fff;
+  }
 
   /* ---------- RIGHT PREVIEW ---------- */
-  #stage{
-    flex:1;
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    padding:30px 20px;
-    overflow:auto;
+  #stage {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 30px 20px;
+    overflow: auto;
   }
-  #poster{
-    width:1024px;
-    background:linear-gradient(180deg,var(--navy-deep) 0%, var(--navy) 60%, var(--navy-deep) 100%);
-    position:relative;
-    padding:34px 46px 40px;
-    font-family:'Arial Black','Segoe UI',sans-serif;
+  #poster {
+    width: 1024px;
+    background: linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 60%, var(--navy-deep) 100%);
+    position: relative;
+    padding: 34px 46px 40px;
+    font-family: 'Arial Black', 'Segoe UI', sans-serif;
   }
-  .hero-img-wrap{
-    margin:0 -46px 0;
-    line-height:0;
+  .hero-img-wrap {
+    margin: 0 -46px 0;
+    line-height: 0;
+    position: relative;
   }
-  .hero-img{
-    width:100%;
-    display:block;
+  .hero-img {
+    width: 100%;
+    display: block;
+    height: 360px;
+    object-fit: cover;
+    background: #091326;
+  }
+  .day-badge {
+    position: absolute;
+    top: 32px;
+    right: 22px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #f2a71b;
+    border: 6px solid white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,.45);
+    z-index: 10;
+  }
+  .day-name {
+    font-size: 14px;
+    font-weight: 900;
+    color: #111;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 20px;
+  }
+  .day-date {
+    font-size: 44px;
+    font-weight: 900;
+    color: #111;
+    line-height: 1;
+    margin-top: 10px;
   }
 
-  .info-row{display:flex;gap:18px;margin-top:26px;}
-  .box{
-    border:2px solid var(--gold);
-    border-radius:10px;
-    background:rgba(15,33,66,.55);
-    padding:16px 20px;
+  .info-row { display: flex; gap: 18px; margin-top: 26px; }
+  .box {
+    border: 2px solid var(--gold);
+    border-radius: 10px;
+    background: rgba(15,33,66,.55);
+    padding: 16px 20px;
   }
-  .box .tag{
-    display:inline-block;
-    background:var(--navy-panel);
-    border:1px solid var(--gold);
-    color:#fff;
-    font-size:13px;font-weight:700;letter-spacing:1px;
-    padding:4px 14px;border-radius:5px;
-    margin-bottom:10px;text-transform:uppercase;
+  .box .tag {
+    display: inline-block;
+    background: var(--navy-panel);
+    border: 1px solid var(--gold);
+    color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: 1px;
+    padding: 4px 14px; border-radius: 5px;
+    margin-bottom: 10px; text-transform: uppercase;
   }
-  .players-box{flex:1;}
-  .player-line{
-    display:flex;align-items:center;gap:10px;
-    font-size:22px;font-weight:800;color:#fff;text-transform:uppercase;
-    padding:6px 0;border-bottom:1px solid #2a3f66;
+  .players-box { flex: 1; }
+  #playersOut { display: grid; gap: 10px; }
+  .player-line {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 22px; font-weight: 800; color: #fff; text-transform: uppercase;
+    padding: 6px 0; border-bottom: 1px solid #2a3f66;
   }
-  .player-line:last-child{border-bottom:none;}
-  .player-line .ico{
-    width:22px;height:22px;fill:var(--gold);flex-shrink:0;
+  .player-line:last-child { border-bottom: none; }
+  .player-line .ico {
+    width: 22px; height: 22px; fill: var(--gold); flex-shrink: 0;
   }
-  .side-box{flex:1;display:flex;flex-direction:column;gap:14px;}
-  .court-row{display:flex;align-items:center;gap:16px;}
-  .court-num{font-size:34px;font-weight:900;color:#fff;}
-  .court-court{color:var(--gold);font-size:15px;font-weight:800;letter-spacing:1px;text-transform:uppercase;}
-  .mini-court{
-    width:140px;height:70px;border-radius:6px;
-    background:linear-gradient(180deg,#0d3d2b,#0a2d20);
-    border:2px solid #2f6b4c;position:relative;flex-shrink:0;
-    margin-left:auto;
+  
+  .side-box { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+  .schedule-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #32496d;
   }
-  .mini-court::before{
-    content:'';position:absolute;inset:6px;border:1px solid #6fae8c;
-  }
-  .mini-court::after{
-    content:'';position:absolute;top:50%;left:0;right:0;height:2px;background:#fff;
-  }
-  .kv-row{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:800;color:#fff;}
-  .kv-row .ico2{font-size:20px;color:var(--gold);}
+  .schedule-item:last-child { border-bottom: none; }
+  .court-name { color: #ffc23c; font-size: 18px; font-weight: 800; text-transform: uppercase; }
+  .court-time { color: white; margin-top: 4px; font-size: 20px; font-weight: 700; }
 
-  .venue-bar{
-    margin-top:22px;
-    border:2px solid var(--gold);
-    border-radius:10px;
-    background:rgba(15,33,66,.55);
-    padding:16px 26px;
-    display:flex;align-items:center;justify-content:space-between;gap:20px;
+  .venue-bar {
+    margin-top: 22px;
+    border: 2px solid var(--gold);
+    border-radius: 10px;
+    background: rgba(15,33,66,.55);
+    padding: 16px 26px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
   }
-  .venue-left{display:flex;align-items:center;gap:14px;}
-  .venue-left .pin{
-    width:46px;height:46px;border-radius:8px;background:var(--navy-panel);
-    display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--gold);flex-shrink:0;
+  .venue-left { display: flex; align-items: center; gap: 14px; }
+  .venue-left .pin {
+    width: 46px; height: 46px; border-radius: 8px; background: var(--navy-panel);
+    display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--gold); flex-shrink: 0;
   }
-  .venue-left .vt{font-size:13px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
-  .venue-left .vname{font-size:21px;font-weight:800;color:#fff;text-transform:uppercase;line-height:1.15;}
-  .venue-left .vcity{font-size:15px;font-weight:700;color:var(--gold);letter-spacing:1px;}
-  .venue-right{
-    text-align:right;font-size:16px;font-weight:800;color:#fff;text-transform:uppercase;
-    display:flex;align-items:center;gap:10px;
+  .venue-left .vt { font-size: 13px; font-weight: 700; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
+  .venue-left .vname { font-size: 21px; font-weight: 800; color: #fff; text-transform: uppercase; line-height: 1.15; }
+  .venue-left .vcity { font-size: 15px; font-weight: 700; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+  .venue-right {
+    text-align: right; font-size: 16px; font-weight: 800; color: #fff; text-transform: uppercase;
+    display: flex; align-items: center; gap: 10px;
   }
-  .venue-right .sw span{color:var(--gold);}
+  .venue-right .sw span { color: var(--gold); }
 
-  .feat-row{
-    display:flex;justify-content:space-between;margin-top:26px;padding:0 10px;
+  .feat-row { display: flex; justify-content: space-between; margin-top: 26px; padding: 0 10px; }
+  .feat { text-align: center; flex: 1; font-size: 11.5px; font-weight: 700; color: #dfe6f5; text-transform: uppercase; letter-spacing: .3px; }
+  .feat .fi {
+    width: 44px; height: 44px; border-radius: 50%; border: 2px solid #4a5c80;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 6px;
+    font-size: 19px; color: var(--gold);
   }
-  .feat{text-align:center;flex:1;font-size:11.5px;font-weight:700;color:#dfe6f5;text-transform:uppercase;letter-spacing:.3px;}
-  .feat .fi{
-    width:44px;height:44px;border-radius:50%;border:2px solid #4a5c80;
-    display:flex;align-items:center;justify-content:center;margin:0 auto 6px;
-    font-size:19px;color:var(--gold);
+  .footer-banner {
+    margin-top: 22px;
+    background: linear-gradient(90deg, var(--gold-bright), var(--gold));
+    color: #1a1300;
+    text-align: center;
+    font-size: 22px; font-weight: 900; letter-spacing: 1px;
+    padding: 12px; border-radius: 4px; text-transform: uppercase;
+    transform: skewX(-3deg);
   }
-  .footer-banner{
-    margin-top:22px;
-    background:linear-gradient(90deg,var(--gold-bright),var(--gold));
-    color:#1a1300;
-    text-align:center;
-    font-size:22px;font-weight:900;letter-spacing:1px;
-    padding:12px;border-radius:4px;text-transform:uppercase;
-    transform:skewX(-3deg);
-  }
-  .footer-banner span{display:inline-block;transform:skewX(3deg);}
+  .footer-banner span { display: inline-block; transform: skewX(3deg); }
 </style>
 </head>
 <body>
 
 <div id="panel">
   <h1>EDIT POSTER</h1>
-  <p class="sub">The top banner photo stays fixed. Update the match details below — the poster updates live. Click Download PNG when ready.</p>
+  <p class="sub">Time inputs are locked to full hour cycles. Adjust your courts and hours below.</p>
+
+  <label>Match Date</label>
+  <input type="date" id="matchDate">
 
   <label>Players (one per line)</label>
   <textarea id="players">CJ
@@ -207,17 +266,20 @@ YAMUNA
 SRAVANTHI
 SAI</textarea>
 
-  <label>Court Number</label>
-  <input type="text" id="court" value="3">
+  <label>Match Schedule</label>
+  <div id="scheduleContainer">
+    <div class="schedule-row">
+      <input type="text" class="court-input" placeholder="Court 2 & 3" value="Court 2 & 3">
+      <input type="time" class="start-input" step="3600" value="20:00">
+      <input type="time" class="end-input" step="3600" value="21:00">
+      <button type="button" class="add-btn" onclick="addScheduleRow()">+</button>
+    </div>
+  </div>
 
-  <label>Time Slot</label>
-  <input type="text" id="timeslot" value="8:00 PM – 9:00 PM">
-
-  <label>Date</label>
-  <input type="text" id="date" value="13 JULY 2026 | SUNDAY">
-
-  <label>Venue</label>
-  <input type="text" id="venueName" value="PULLELA GOPICHAND BADMINTON ACADEMY">
+  <label>Venue Name</label>
+  <input type="text" id="venueName" value="KOTAK PULLELA GOPICHAND BADMINTON ACADEMY">
+  
+  <label>Venue City</label>
   <input type="text" id="venueCity" value="HYDERABAD" style="margin-top:6px;">
 
   <button id="dlBtn">⬇ DOWNLOAD PNG</button>
@@ -228,8 +290,20 @@ SAI</textarea>
 <div id="stage">
   <div id="poster">
     <div class="hero-img-wrap">
-    <img src="hero-img.png" class="hero-img" alt="Hero Banner">
-  </div>
+      <div class="hero-img-wrap">
+          <img src="./hero-img.png" class="hero-img" alt="Hero Banner">
+      </div>
+      <!-- <svg class="hero-img" viewBox="0 0 1024 360" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#0c1a33"/>
+        <circle cx="512" cy="180" r="130" fill="none" stroke="#f2a71b" stroke-width="3" opacity="0.3"/>
+        <path d="M 0 360 L 450 100 M 1024 360 L 574 100" stroke="#ffc23c" stroke-width="2" opacity="0.2"/>
+        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Arial Black',sans-serif" font-size="64" fill="#ffc23c" font-style="italic">MATCH DAY</text>
+      </svg> -->
+      <div class="day-badge">
+        <div class="day-name" id="dayName">MONDAY</div>
+        <div class="day-date" id="dayNumber">13</div>
+      </div>
+    </div>
 
     <div class="info-row">
       <div class="box players-box">
@@ -237,21 +311,8 @@ SAI</textarea>
         <div id="playersOut"></div>
       </div>
       <div class="box side-box">
-        <div>
-          <div class="tag">COURT</div>
-          <div class="court-row">
-            <div><div class="court-court">COURT</div><div class="court-num" id="outCourt">3</div></div>
-            <div class="mini-court"></div>
-          </div>
-        </div>
-        <div>
-          <div class="tag">TIME SLOT</div>
-          <div class="kv-row"><span class="ico2">🕒</span><span id="outTime">8:00 PM – 9:00 PM</span></div>
-        </div>
-        <div>
-          <div class="tag">DATE</div>
-          <div class="kv-row"><span class="ico2">📅</span><span id="outDate">13 JULY 2026 | SUNDAY</span></div>
-        </div>
+        <div class="tag">MATCH SCHEDULE</div>
+        <div id="scheduleOut"></div>
       </div>
     </div>
 
@@ -260,7 +321,7 @@ SAI</textarea>
         <div class="pin">📍</div>
         <div>
           <div class="vt">VENUE</div>
-          <div class="vname" id="outVenueName">PULLELA GOPICHAND BADMINTON ACADEMY</div>
+          <div class="vname" id="outVenueName">KOTAK PULLELA GOPICHAND BADMINTON ACADEMY</div>
           <div class="vcity" id="outVenueCity">HYDERABAD</div>
         </div>
       </div>
@@ -269,95 +330,179 @@ SAI</textarea>
       </div>
     </div>
 
-   <div class="feat-row">
-  <div class="feat">
-    <div class="fi">🤝</div>
-    BUILD<br>FRIENDSHIPS
-  </div>
-
-  <div class="feat">
-    <div class="fi">🏸</div>
-    ENJOY THE<br>GAME
-  </div>
-
-  <div class="feat">
-    <div class="fi">💪</div>
-    IMPROVE<br>TOGETHER
-  </div>
-
-  <div class="feat">
-    <div class="fi">👥</div>
-    TEAMWORK &<br>SPORTSMANSHIP
-  </div>
-
-  <div class="feat">
-    <div class="fi">🏆</div>
-    PLAY WITH<br>PASSION
-  </div>
-</div>
+    <div class="feat-row">
+      <div class="feat"><div class="fi">🤝</div>BUILD<br>FRIENDSHIPS</div>
+      <div class="feat"><div class="fi">🏸</div>ENJOY THE<br>GAME</div>
+      <div class="feat"><div class="fi">💪</div>IMPROVE<br>TOGETHER</div>
+      <div class="feat"><div class="fi">👥</div>TEAMWORK</div>
+      <div class="feat"><div class="fi">🏆</div>PLAY WITH<br>PASSION</div>
+    </div>
 
     <div class="footer-banner"><span>EVERY MATCH MAKES YOU BETTER!</span></div>
   </div>
 </div>
 
 <script>
+const days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+
 function playerIcon(){
   return '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>';
 }
 
+function formatTime12hr(timeStr) {
+  if (!timeStr) return "";
+  let [hours, minutes] = timeStr.split(':');
+  hours = parseInt(hours, 10);
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // Handle 0 as 12
+  return `${hours}:${minutes} ${ampm}`;
+}
+
 function renderPlayers(){
   const lines = document.getElementById('players').value.split('\n').map(s=>s.trim()).filter(Boolean);
-   document.getElementById('players-count').textContent =
-        `PLAYERS (${lines.length})`;
+  document.getElementById('players-count').textContent = `PLAYERS (${lines.length})`;
+  
   document.getElementById('playersOut').innerHTML = lines.map(name =>
     `<div class="player-line">${playerIcon()}<span>${escapeHtml(name)}</span></div>`
   ).join('');
+
+  const container = document.getElementById("playersOut");
+  if(lines.length <= 6){
+    container.style.gridTemplateColumns = "1fr";
+    container.style.fontSize = "22px";
+  } else if(lines.length <= 12){
+    container.style.gridTemplateColumns = "1fr 1fr";
+    container.style.fontSize = "18px";
+  } else {
+    container.style.gridTemplateColumns = "1fr 1fr 1fr";
+    container.style.fontSize = "16px";
+  }
 }
+
 function escapeHtml(s){
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-function syncAll(){
-  document.getElementById('outCourt').textContent = document.getElementById('court').value;
-  document.getElementById('outTime').textContent = document.getElementById('timeslot').value;
-  document.getElementById('outDate').textContent = document.getElementById('date').value;
-  document.getElementById('outVenueName').textContent = document.getElementById('venueName').value;
-  document.getElementById('outVenueCity').textContent = document.getElementById('venueCity').value;
+function syncAll() {
+  document.getElementById("outVenueName").textContent = document.getElementById("venueName").value;
+  document.getElementById("outVenueCity").textContent = document.getElementById("venueCity").value;
+
+  const venue = document.getElementById("outVenueName");
+  if (venue.textContent.length > 40) {
+    venue.style.fontSize = "18px";
+  } else if (venue.textContent.length > 30) {
+    venue.style.fontSize = "20px";
+  } else {
+    venue.style.fontSize = "24px";
+  }
+
   renderPlayers();
+  renderSchedule();
+  updateDate();
 }
 
-document.querySelectorAll('#panel input[type=text], #panel textarea').forEach(el=>{
-  el.addEventListener('input', syncAll);
+function addScheduleRow(){
+  const row = document.createElement("div");
+  row.className = "schedule-row";
+  row.innerHTML = `
+    <input type="text" class="court-input" placeholder="Court Number">
+    <input type="time" class="start-input" step="3600" value="18:00">
+    <input type="time" class="end-input" step="3600" value="19:00">
+    <button type="button" class="remove-btn" onclick="removeScheduleRow(this)">-</button>
+  `;
+  document.getElementById("scheduleContainer").appendChild(row);
+  bindScheduleEvents();
+  syncAll();
+}
+
+function bindScheduleEvents(){
+  document.querySelectorAll(".court-input, .start-input, .end-input").forEach(input => {
+    input.removeEventListener("input", syncAll);
+    input.addEventListener("input", syncAll);
+  });
+}
+
+function removeScheduleRow(btn){
+  btn.parentElement.remove();
+  syncAll();
+}
+
+function renderSchedule(){
+  const courts = [...document.querySelectorAll(".court-input")];
+  const starts = [...document.querySelectorAll(".start-input")];
+  const ends = [...document.querySelectorAll(".end-input")];
+  let html = "";
+
+  courts.forEach((court, index) => {
+    if(court.value.trim() === "" && !starts[index].value && !ends[index].value) return;
+    
+    const timeFormatted = (starts[index].value || ends[index].value) 
+      ? `${formatTime12hr(starts[index].value)} – ${formatTime12hr(ends[index].value)}` 
+      : "No time selected";
+
+    html += `
+      <div class="schedule-item">
+        <div class="court-name">🏸 ${escapeHtml(court.value)}</div>
+        <div class="court-time">${timeFormatted}</div>
+      </div>
+    `;
+  });
+  document.getElementById("scheduleOut").innerHTML = html;
+}
+
+function updateDate() {
+  const input = document.getElementById("matchDate").value;
+  if (!input) return;
+
+  const d = new Date(input);
+  const day = days[d.getDay()];
+  
+  document.getElementById("dayName").textContent = day;
+  document.getElementById("dayNumber").textContent = d.getDate();
+}
+
+document.querySelectorAll("#panel input, #panel textarea").forEach(el => {
+  el.addEventListener("input", syncAll);
 });
+document.getElementById("matchDate").addEventListener("change", syncAll);
 
 document.getElementById('resetBtn').addEventListener('click', ()=>{
-  document.getElementById('players').value='CJ\nYAMUNA\nSRAVANTHI\nSAI';
-  document.getElementById('court').value='3';
-  document.getElementById('timeslot').value='8:00 PM – 9:00 PM';
-  document.getElementById('date').value='13 JULY 2026 | SUNDAY';
-  document.getElementById('venueName').value='PULLELA GOPICHAND BADMINTON ACADEMY';
-  document.getElementById('venueCity').value='HYDERABAD';
+  document.getElementById("players").value = `CJ\nYAMUNA\nSRAVANTHI\nSAI`;
+  document.getElementById("venueName").value = "KOTAK PULLELA GOPICHAND BADMINTON ACADEMY";
+  document.getElementById("venueCity").value = "HYDERABAD";
+  
+  const todayStr = new Date().toISOString().split("T")[0];
+  document.getElementById("matchDate").value = todayStr;
+  
+  document.getElementById("scheduleContainer").innerHTML = `
+    <div class="schedule-row">
+      <input type="text" class="court-input" placeholder="Court 2 & 3" value="Court 2 & 3">
+      <input type="time" class="start-input" step="3600" value="20:00">
+      <input type="time" class="end-input" step="3600" value="21:00">
+      <button type="button" class="add-btn" onclick="addScheduleRow()">+</button>
+    </div>
+  `;
+  bindScheduleEvents();
   syncAll();
 });
 
 document.getElementById('dlBtn').addEventListener('click', ()=>{
   const status = document.getElementById('status');
   status.textContent = 'Generating image...';
+  
   html2canvas(document.getElementById('poster'), {backgroundColor:null, scale:2, useCORS:true}).then(canvas=>{
     const link = document.createElement('a');
     const now = new Date();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const yyyy = now.getFullYear();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const min = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
 
-const mm = String(now.getMonth() + 1).padStart(2, '0');
-const dd = String(now.getDate()).padStart(2, '0');
-const yyyy = now.getFullYear();
-
-const hh = String(now.getHours()).padStart(2, '0');
-const min = String(now.getMinutes()).padStart(2, '0');
-const ss = String(now.getSeconds()).padStart(2, '0');
-
-const fileName = `badminton-poster-${mm}${dd}${yyyy}-${hh}${min}${ss}.png`;
-
-link.download = fileName;
+    link.download = `badminton-poster-${mm}${dd}${yyyy}-${hh}${min}${ss}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
     status.textContent = 'Downloaded!';
@@ -368,6 +513,9 @@ link.download = fileName;
   });
 });
 
+// Setup Initializer Lifecycle
+document.getElementById("matchDate").value = new Date().toISOString().split("T")[0];
+bindScheduleEvents();
 syncAll();
 </script>
 </body>
