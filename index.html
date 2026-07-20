@@ -453,11 +453,14 @@ function renderSchedule(){
     html += `
   <div class="schedule-item" style="display:flex;justify-content:space-between;align-items:center;gap:15px;">
     <div>
+      <div  style="display:flex;justify-content:space-between;>
       <div class="court-name">🏸 ${escapeHtml(court.value)}</div>
+          <div class="mini-court"></div>
+
+      </div>
       <div class="court-time">${timeFormatted}</div>
     </div>
 
-    <div class="mini-court"></div>
   </div>
 `;
   });
@@ -532,4 +535,3 @@ syncAll();
 </script>
 </body>
 </html>
-
