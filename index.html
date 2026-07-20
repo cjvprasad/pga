@@ -82,7 +82,7 @@
   #resetBtn { background: #1f4fb3; color: #fff; }
   #status { font-size: 11.5px; color: #7fdc9a; min-height: 16px; margin-top: 8px; text-align: center; }
 
-  /* ---------- SCHEDULE GRID ROWS ---------- */
+  /* ---------- SCHEDULE GRID ROWS (editor) ---------- */
  .schedule-row{
     display:grid;
     grid-template-columns: 1.4fr 1fr 1fr 42px;
@@ -194,7 +194,7 @@
     line-height: 1;
   }
 
-  .info-row { display: flex; gap: 18px; margin-top: 26px; }
+  .info-row { display: flex; gap: 18px; margin-top: 26px; align-items: stretch; }
   .box {
     border: 2px solid var(--gold);
     border-radius: 10px;
@@ -222,27 +222,79 @@
     width: 22px; height: 22px; fill: var(--gold); flex-shrink: 0;
   }
   
-  .side-box { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+  /* ---------- MATCH SCHEDULE (poster output) — redesigned for at-a-glance scanning ---------- */
+  .side-box { flex: 1.15; display: flex; flex-direction: column; }
+  #scheduleOut { display: flex; flex-direction: column; gap: 12px; }
+
   .schedule-item {
-    padding: 12px 0;
-    border-bottom: 1px solid #32496d;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(242,167,27,.10), rgba(15,33,66,.6));
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--gold);
+    border-radius: 10px;
+    padding: 12px 16px;
   }
-  .schedule-item:last-child { border-bottom: none; }
-  .court-name { color: #ffc23c; font-size: 18px; font-weight: 800; text-transform: uppercase; }
-  .court-time { color: white; margin-top: 4px; font-size: 20px; font-weight: 700; }
-  .mini-court{
-    width:50%;
-    height: stretch;
-    border-radius:6px;
-    background:linear-gradient(180deg,#0d3d2b,#0a2d20);
-    border:2px solid #2f6b4c;position:relative;flex-shrink:0;
+
+  /* Big circular court badge — same visual language as the day badge so
+     the court number is the first thing the eye lands on. */
+  .court-badge {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: linear-gradient(160deg, var(--gold-bright), var(--gold));
+    border: 3px solid #fff;
+    box-shadow: 0 6px 16px rgba(242,167,27,.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
-  .mini-court::before{
-    content:'';position:absolute;inset:6px;border:1px solid #6fae8c;
+  .court-badge .cb-label {
+    font-size: 8.5px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #3a2a00;
+    line-height: 1;
   }
-  .mini-court::after{
-    content:'';position:absolute;top:50%;left:0;right:0;height:2px;background:#fff;
+  .court-badge .cb-num {
+    font-size: 24px;
+    font-weight: 900;
+    color: #111;
+    line-height: 1.15;
+    max-width: 54px;
+    text-align: center;
+    word-break: break-word;
   }
+
+  .schedule-detail { flex: 1; min-width: 0; }
+  .court-name-lg {
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: #9fb0cc;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .court-name-lg b { color: var(--gold-bright); }
+
+  .court-time-lg {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 27px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: .3px;
+    white-space: nowrap;
+  }
+  .court-time-lg .tclock { font-size: 20px; margin-right: 2px; }
+  .court-time-lg .sep { color: var(--gold); font-size: 20px; margin: 0 2px; }
+  .court-time-lg .noon { font-size: 15px; color: var(--gold-bright); font-weight: 800; margin-left: 1px; }
+
   .venue-bar {
     margin-top: 22px;
     border: 2px solid var(--gold);
@@ -376,14 +428,14 @@ function playerIcon(){
   return '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>';
 }
 
-function formatTime12hr(timeStr) {
-  if (!timeStr) return "";
+function formatTime12hrParts(timeStr) {
+  if (!timeStr) return null;
   let [hours, minutes] = timeStr.split(':');
   hours = parseInt(hours, 10);
   const ampm = hours >= 12 ? 'PM' : 'AM';
   hours = hours % 12;
   hours = hours ? hours : 12;
-  return `${hours}:${minutes} ${ampm}`;
+  return { hours, minutes, ampm };
 }
 
 function renderPlayers(){
@@ -456,6 +508,25 @@ function removeScheduleRow(btn){
   syncAll();
 }
 
+/* Builds one big, high-contrast "TIME – TIME" line so the slot is
+   readable at a glance instead of a tiny all-caps pill. */
+function buildTimeMarkup(startVal, endVal){
+  const start = formatTime12hrParts(startVal);
+  const end = formatTime12hrParts(endVal);
+
+  if (!start && !end) {
+    return `<div class="court-time-lg" style="color:#7f93b8;font-size:16px;font-weight:700;">No time selected</div>`;
+  }
+
+  const part = (p) => p ? `${p.hours}:${p.minutes}<span class="noon">${p.ampm}</span>` : '--:--';
+
+  return `
+    <div class="court-time-lg">
+      <span class="tclock">🕒</span>${part(start)}<span class="sep">–</span>${part(end)}
+    </div>
+  `;
+}
+
 function renderSchedule(){
   const courts = [...document.querySelectorAll(".court-input")];
   const starts = [...document.querySelectorAll(".start-input")];
@@ -464,25 +535,21 @@ function renderSchedule(){
 
   courts.forEach((court, index) => {
     if(court.value.trim() === "" && !starts[index].value && !ends[index].value) return;
-    
-    const timeFormatted = (starts[index].value || ends[index].value) 
-      ? `${formatTime12hr(starts[index].value)} – ${formatTime12hr(ends[index].value)}` 
-      : "No time selected";
 
-  html += `
-<div class="schedule-item" style="display:flex;justify-content:space-between;align-items:center;gap:15px;">
-    
-    <div style="flex:1;">
-        <div style="display:flex;justify-content:space-between;align-items:center;height:50px">
-            <div class="court-name">🏸 ${escapeHtml(court.value)}</div>
-            <div class="mini-court"></div>
+    const courtLabel = court.value.trim() ? escapeHtml(court.value) : "?";
+
+    html += `
+      <div class="schedule-item">
+        <div class="court-badge">
+          <div class="cb-label">COURT</div>
+          <div class="cb-num">${courtLabel}</div>
         </div>
-
-        <div class="court-time">${timeFormatted}</div>
-    </div>
-
-</div>
-`;
+        <div class="schedule-detail">
+          <div class="court-name-lg">🏸 <b>COURT ${courtLabel}</b></div>
+          ${buildTimeMarkup(starts[index].value, ends[index].value)}
+        </div>
+      </div>
+    `;
   });
   document.getElementById("scheduleOut").innerHTML = html;
 }
